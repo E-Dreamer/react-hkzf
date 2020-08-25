@@ -1,9 +1,10 @@
 import React from 'react'
-import { NavBar,Toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 import './index.scss'
 import axios from 'axios'
 import { getCurrentCity } from '../../utils'
 import { List, AutoSizer } from 'react-virtualized'
+import NavHeader from '../../components/NavHeader'
 // 渲染城市的数据格式
 // {a:[],b:[]}
 // 渲染右侧索引的数据格式：
@@ -79,9 +80,9 @@ export default class CityList extends React.Component {
             //有房源数据 保存本地数据中 并且返回该城市
             localStorage.setItem('hkzf_city', JSON.stringify({ label, value }));
             this.props.history.go(-1);
-        }else {
+        } else {
             //提示用户没有房源信息
-            Toast.info('该城市暂无房源数据',1,null,false);
+            Toast.info('该城市暂无房源数据', 1, null, false);
         }
     }
     // 渲染每一行数据的元素
@@ -162,12 +163,15 @@ export default class CityList extends React.Component {
     }
     render() {
         return <div className='citylist'>
-            <NavBar
+            {/* <NavBar
                 className='navbar'
                 mode="light"
                 icon={<i className='iconfont icon-back'></i>}
                 onLeftClick={() => this.props.history.go(-1)}
-            >城市选择</NavBar>
+            >城市选择</NavBar> */}
+            <NavHeader>
+                城市选择
+            </NavHeader>
             <AutoSizer>
                 {({ height, width }) => (
                     <List

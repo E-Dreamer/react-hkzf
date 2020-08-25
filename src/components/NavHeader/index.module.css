@@ -1,0 +1,8 @@
+.navbar {
+    background: #f6f5f6;
+    color: #333;
+}
+/* 全局类型 */
+.navbar :global(.am-navbar-title) {
+    color: #333;
+}
