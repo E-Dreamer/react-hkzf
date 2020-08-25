@@ -1,6 +1,7 @@
 import React from 'react'
 import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile';
 import axios from 'axios'
+import {getCurrentCity} from '../../utils';
 import './index.scss'
 // 导入导航菜单图片
 import Nav1 from '../../assets/images/nav-1.png'
@@ -43,7 +44,8 @@ export default class New extends React.Component {
         isSwipersLoad: false,
         groups: [],
         // 最新资讯
-        news: []
+        news: [],
+        cityname:'长沙'
     }
     // 获取轮播图的数据
     async getSwipers() {
@@ -85,6 +87,11 @@ export default class New extends React.Component {
         this.getSwipers();
         this.getGroups();
         this.getNews();
+        getCurrentCity().then(res=>{
+          this.setState({
+            cityname : res.label
+          })
+        })
     }
     // 渲染轮播图结构
     renderSwipers() {
@@ -148,6 +155,35 @@ export default class New extends React.Component {
                     >
                         {this.renderSwipers()}
                     </Carousel> : ''}
+
+                    {/* 搜索框 */}
+                    <Flex className="search-box">
+                        {/* 左侧白色区域 */}
+                        <Flex className="search">
+                            {/* 位置 */}
+                            <div
+                                className="location"
+                                onClick={() => this.props.history.push('/citylist')}
+                            >
+                                <span className="name">{this.state.cityname}</span>
+                                <i className="iconfont icon-arrow" />
+                            </div>
+
+                            {/* 搜索表单 */}
+                            <div
+                                className="form"
+                                onClick={() => this.props.history.push('/search')}
+                            >
+                                <i className="iconfont icon-seach" />
+                                <span className="text">请输入小区或地址</span>
+                            </div>
+                        </Flex>
+                        {/* 右侧地图图标 */}
+                        <i
+                            className="iconfont icon-map"
+                            onClick={() => this.props.history.push('/map')}
+                        />
+                    </Flex>
                 </div>
 
                 {/* 导航菜单 */}

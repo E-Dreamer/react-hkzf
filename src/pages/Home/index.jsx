@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom'
 import Index from '../Index'
 import List from '../List'
 import Profile from '../Profile'
+import Search from '../Search'
 import New from '../New'
 import { TabBar } from 'antd-mobile';
 import './index.scss'
@@ -82,6 +83,8 @@ export default class Home extends React.Component {
             <Route path='/home/news' component={New}></Route>
             <Route path='/home/list' component={List}></Route>
             <Route path='/home/profile' component={Profile}></Route>
+            <Route path='/home/search' component={Search}></Route>
+
             {/* TabBar */}
             <TabBar
                 tintColor="#21b97a"
