@@ -1,0 +1,25 @@
+.header {
+    /* position: fixed;
+    top:0;
+    left:0;
+    width: 100%; */
+    height:45px;
+    padding: 0 10px;
+    background-color: #f6f5f6;
+}
+.header :global(.icon-back){
+    font-size:16px;
+    color:#999;
+}
+/* 覆盖SearchHeader 组件的样式 */
+.searchHeader {
+    position: relative;
+    top: 0;
+    padding:0;
+}
+.searchHeader :global(.icon-map){
+    color:#00ae66
+}
+.searchHeader :global(.search){
+    height:30px;
+}

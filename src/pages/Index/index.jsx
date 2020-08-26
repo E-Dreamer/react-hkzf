@@ -1,7 +1,9 @@
 import React from 'react'
 import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile';
-import axios from 'axios'
-import {getCurrentCity} from '../../utils';
+import { getCurrentCity } from '../../utils';
+import { BASE_URL } from '../../utils/url'
+import { API } from '../../utils/api'
+import SearchHeader from '../../components/SearchHeader'
 import './index.scss'
 // 导入导航菜单图片
 import Nav1 from '../../assets/images/nav-1.png'
@@ -45,11 +47,11 @@ export default class New extends React.Component {
         groups: [],
         // 最新资讯
         news: [],
-        cityname:'长沙'
+        cityname: '长沙'
     }
     // 获取轮播图的数据
     async getSwipers() {
-        const res = await axios.get('http://localhost:8080/home/swiper');
+        const res = await API.get('/home/swiper');
         // 简单的方式
         this.setState({
             swipers: res.data.body,
@@ -64,7 +66,7 @@ export default class New extends React.Component {
     }
     // 获取租房小组的数据
     async getGroups() {
-        const res = await axios.get('http://localhost:8080/home/groups', {
+        const res = await API.get('/home/groups', {
             params: {
                 area: 'AREA%7C88cff55c-aaa4-e2e0'
             }
@@ -74,7 +76,7 @@ export default class New extends React.Component {
         })
     }
     async getNews() {
-        const res = await axios.get('http://localhost:8080/home/news', {
+        const res = await API.get('/home/news', {
             params: {
                 area: 'AREA%7C88cff55c-aaa4-e2e0'
             }
@@ -87,10 +89,10 @@ export default class New extends React.Component {
         this.getSwipers();
         this.getGroups();
         this.getNews();
-        getCurrentCity().then(res=>{
-          this.setState({
-            cityname : res.label
-          })
+        getCurrentCity().then(res => {
+            this.setState({
+                cityname: res.label
+            })
         })
     }
     // 渲染轮播图结构
@@ -128,7 +130,7 @@ export default class New extends React.Component {
                 <div className="imgwrap">
                     <img
                         className="img"
-                        src={`http://localhost:8080${item.imgSrc}`}
+                        src={BASE_URL + item.imgSrc}
                         alt=""
                     />
                 </div>
@@ -157,33 +159,7 @@ export default class New extends React.Component {
                     </Carousel> : ''}
 
                     {/* 搜索框 */}
-                    <Flex className="search-box">
-                        {/* 左侧白色区域 */}
-                        <Flex className="search">
-                            {/* 位置 */}
-                            <div
-                                className="location"
-                                onClick={() => this.props.history.push('/citylist')}
-                            >
-                                <span className="name">{this.state.cityname}</span>
-                                <i className="iconfont icon-arrow" />
-                            </div>
-
-                            {/* 搜索表单 */}
-                            <div
-                                className="form"
-                                onClick={() => this.props.history.push('/search')}
-                            >
-                                <i className="iconfont icon-seach" />
-                                <span className="text">请输入小区或地址</span>
-                            </div>
-                        </Flex>
-                        {/* 右侧地图图标 */}
-                        <i
-                            className="iconfont icon-map"
-                            onClick={() => this.props.history.push('/map')}
-                        />
-                    </Flex>
+                    <SearchHeader cityname={this.state.cityname}></SearchHeader>
                 </div>
 
                 {/* 导航菜单 */}

@@ -1,9 +1,11 @@
 import React from 'react'
-import axios from 'axios'
+import {API} from '../../utils/api'
+import  {BASE_URL} from '../../utils/url'
 // 导入封装好的navheader组件
 import NavHeader from '../../components/NavHeader'
 import style from './index.module.css'
 import { Link } from 'react-router-dom'
+import { Toast } from 'antd-mobile'
 const BMapGL = window.BMapGL
 
 
@@ -21,9 +23,9 @@ const labelStyle = {
 export default class Map extends React.Component {
     state = {
         // 小区下的房源列表
-        housesList:[],
+        housesList: [],
         // 是否展示房源列表
-        isShowList:false
+        isShowList: false
     }
     componentDidMount() {
         this.initMap();
@@ -31,13 +33,21 @@ export default class Map extends React.Component {
     // 封装 渲染覆盖物入口
     // 接受区域id参数 根据id请求房源数据
     async renderOverlays(id) {
-        const result = await axios.get(`http://localhost:8080/area/map?id=${id}`);
-        const data = result.data.body;
-        // 调用 方法 获取级别和类型
-        const { nextZoom, type } = this.getTypeAndZoom()
-        data.forEach(item => {
-            this.createOverlays(item, nextZoom, type)
-        })
+        try {
+            // 开启loading
+            Toast.loading('loading....', 0, null, false);
+            const result = await API.get( `/area/map?id=${id}`);
+            const data = result.data.body;
+            Toast.hide();
+            // 调用 方法 获取级别和类型
+            const { nextZoom, type } = this.getTypeAndZoom()
+            data.forEach(item => {
+                this.createOverlays(item, nextZoom, type)
+            })
+        } catch (e) {
+            Toast.hide();
+        }
+
     }
     // 计算要绘制的覆盖物类型和下一个缩放级别
     // 区 => 11 ,范围  >=10 <12
@@ -161,11 +171,18 @@ export default class Map extends React.Component {
     }
     // 获取小区房源数据
     async getHousesList(id) {
-        const res = await axios.get(`http://localhost:8080/houses?cityId=${id}`)
-        this.setState({
-            housesList:res.data.body.list,
-            isShowList:true
-        })
+        try {
+            // 开启loading
+            Toast.loading('loading....', 0, null, false);
+            const res = await API.get(`/houses?cityId=${id}`)
+            Toast.hide();
+            this.setState({
+                housesList: res.data.body.list,
+                isShowList: true
+            })
+        } catch (e) {
+            Toast.hide();
+        }
     }
     // 封装渲染房屋列表的方法
     renderHousesList() {
@@ -174,7 +191,7 @@ export default class Map extends React.Component {
                 <div className={style.imgWrap}>
                     <img
                         className={style.img}
-                        src={`http://localhost:8080${item.houseImg}`}
+                        src={BASE_URL + item.houseImg}
                         alt=""
                     />
                 </div>
@@ -269,10 +286,10 @@ export default class Map extends React.Component {
         },
             label);
 
-        map.addEventListener('movestart',()=>{
-            if(this.state.isShowList){
+        map.addEventListener('movestart', () => {
+            if (this.state.isShowList) {
                 this.setState({
-                    isShowList:false
+                    isShowList: false
                 })
             }
         })

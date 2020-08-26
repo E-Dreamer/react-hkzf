@@ -1,12 +1,14 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
+import './index.scss'
+// 导入tabbar
 import Index from '../Index'
 import List from '../List'
 import Profile from '../Profile'
 import Search from '../Search'
 import New from '../New'
 import { TabBar } from 'antd-mobile';
-import './index.scss'
+
 
 //tabbar数据
 const tabItems = [

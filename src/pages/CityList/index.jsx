@@ -1,9 +1,9 @@
 import React from 'react'
 import { Toast } from 'antd-mobile';
 import './index.scss'
-import axios from 'axios'
 import { getCurrentCity } from '../../utils'
 import { List, AutoSizer } from 'react-virtualized'
+import { API } from '../../utils/api'
 import NavHeader from '../../components/NavHeader'
 // 渲染城市的数据格式
 // {a:[],b:[]}
@@ -141,25 +141,33 @@ export default class CityList extends React.Component {
 
     // 获取城市列表数据的方法
     async getCityList() {
-        const res = await axios.get('http://localhost:8080/area/city?level=1');
-        const { cityList, cityIndex } = formatCityData(res.data.body)
-        /*
-        1 获取热门城市数据
-        2 将数据添加到cityList中
-        3 将索引添加到cityIndex中
-        */
-        const hotRes = await axios.get('http://localhost:8080/area/hot');
-        cityList['hot'] = hotRes.data.body;
-        cityIndex.unshift('hot');
+        // 开启loading
+        Toast.loading('loading....', 0, null, false);
+        try {
+            const res = await API.get('/area/city?level=1');
+            const { cityList, cityIndex } = formatCityData(res.data.body)
+            /*
+            1 获取热门城市数据
+            2 将数据添加到cityList中
+            3 将索引添加到cityIndex中
+            */
+            const hotRes = await API.get('/area/hot');
+            cityList['hot'] = hotRes.data.body;
+            cityIndex.unshift('hot');
 
-        //获取定位城市的方法
-        const curcity = await getCurrentCity()
-        cityList['#'] = [curcity]
-        cityIndex.unshift('#');
-        this.setState({
-            cityIndex,
-            cityList
-        })
+            //获取定位城市的方法
+            const curcity = await getCurrentCity()
+            cityList['#'] = [curcity]
+            cityIndex.unshift('#');
+            this.setState({
+                cityIndex,
+                cityList
+            })
+            Toast.hide();
+        }catch(e){
+            Toast.hide();
+        }
+     
     }
     render() {
         return <div className='citylist'>
