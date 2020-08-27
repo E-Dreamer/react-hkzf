@@ -34,12 +34,12 @@ export default class New extends React.Component {
     };
   }
   // 初始化默认值
-  label = ''
-  value = ''
+  label = "";
+  value = "";
   // 初始化 实例属性
   filters = {};
   async componentDidMount() {
-    const { label,value } = await getCurrentCity();
+    const { label, value } = await getCurrentCity();
     this.label = label;
     this.value = value;
     this.searchHouseList();
@@ -70,6 +70,12 @@ export default class New extends React.Component {
     });
   }
 
+  componentWillUnMount = () => {
+    this.setState = (state, callback) => {
+      return;
+    };
+    Toast.hide();
+  };
   //渲染列表数据
   renderList() {
     const { count, isLoading } = this.state;
@@ -140,7 +146,7 @@ export default class New extends React.Component {
         title={house.title}
         tags={house.tags}
         price={house.price}
-        onClick={()=>this.props.history.push('/detail/'+house.houseCode)}
+        onClick={() => this.props.history.push("/detail/" + house.houseCode)}
       />
     );
   };

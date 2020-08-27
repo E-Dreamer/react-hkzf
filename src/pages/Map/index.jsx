@@ -31,6 +31,9 @@ export default class Map extends React.Component {
     componentDidMount() {
         this.initMap();
     }
+    componentWillUnmount(){
+        Toast.hide();
+    }
     // 封装 渲染覆盖物入口
     // 接受区域id参数 根据id请求房源数据
     async renderOverlays(id) {
