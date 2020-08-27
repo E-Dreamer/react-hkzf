@@ -6,6 +6,7 @@ import NavHeader from '../../components/NavHeader'
 import style from './index.module.css'
 import { Link } from 'react-router-dom'
 import { Toast } from 'antd-mobile'
+import HouseItem from '../../components/HouseItem/index'
 const BMapGL = window.BMapGL
 
 
@@ -185,8 +186,15 @@ export default class Map extends React.Component {
         }
     }
     // 封装渲染房屋列表的方法
+    // <HouseItem 
+    //           src={BASE_URL + item.houseImg}
+    //           title={item.title}
+    //           desc={item.desc}
+    //           tags={item.tags}
+    //           price={item.price}
+    //         />
     renderHousesList() {
-        return this.state.housesList.map(item => (
+        return  this.state.housesList.map(item => (
             <div className={style.house} key={item.houseCode}>
                 <div className={style.imgWrap}>
                     <img
