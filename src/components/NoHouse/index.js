@@ -17,7 +17,8 @@ const NoHouse = ({ children }) => (
 )
 
 NoHouse.propTypes = {
-  children: PropTypes.string.isRequired
+  // node 表示可以渲染任何的内容
+  children: PropTypes.node.isRequired
 }
 
 export default NoHouse

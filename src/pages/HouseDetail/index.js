@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Carousel, Flex } from "antd-mobile";
+import { Carousel, Flex, Modal, Toast } from "antd-mobile";
 
 import NavHeader from "../../components/NavHeader";
 import HouseItem from "../../components/HouseItem";
@@ -9,7 +9,7 @@ import HousePackage from "../../components/HousePackage";
 import { BASE_URL } from "../../utils/url";
 import { API } from "../../utils/api";
 import styles from "./index.module.css";
-
+import { isAuth } from "../../utils";
 // 猜你喜欢
 const recommendHouses = [
   {
@@ -55,7 +55,7 @@ const labelStyle = {
   fontSize: 12,
   userSelect: "none",
 };
-
+const alert = Modal.alert;
 export default class HouseDetail extends Component {
   state = {
     isLoading: false,
@@ -93,6 +93,9 @@ export default class HouseDetail extends Component {
       // 房屋描述
       description: "",
     },
+
+    // 房源是否收藏
+    isFavorite: false,
   };
 
   componentDidMount() {
@@ -100,6 +103,25 @@ export default class HouseDetail extends Component {
     // console.log(this.props);
     // 获取房屋数据
     this.getHouseDetail();
+    // 检查房源是否收藏
+    this.checkFavorite();
+  }
+  async checkFavorite() {
+    const isLogin = isAuth();
+    if (!isLogin) {
+      // 未登录
+      return;
+    }
+
+    // 已登录
+    const { id } = this.props.match.params;
+    const res = await API.get("/user/favorites/" + id);
+    const { status, body } = res.data;
+    if (status === 200) {
+      this.setState({
+        isFavorite: body.isFavorite,
+      });
+    }
   }
   // 获取房屋数据
   async getHouseDetail() {
@@ -117,6 +139,50 @@ export default class HouseDetail extends Component {
     // 渲染地图
     this.renderMap(community, coord);
   }
+  // 收藏房源
+  handleFavorite = async () => {
+    const isLogin = isAuth();
+
+    const { history, location, match } = this.props;
+    if (!isLogin) {
+      return alert("提示", "登录后才能收藏房源,是否去登录？", [
+        { text: "取消" },
+        {
+          text: "去登录",
+          onPress: () => {
+            history.push("/login", { from: location });
+          },
+        },
+      ]);
+    }
+    const { isFavorite } = this.state;
+    console.log(isFavorite);
+    const { id } = match.params;
+    if (isFavorite) {
+      // 已收藏
+      const res = await API.delete("/user/favorites/" + id);
+      this.setState({
+        isFavorite: false,
+      });
+      if (res.data.status === 200) {
+        Toast.info("已取消收藏", 1, null, false);
+      } else {
+        // token超时
+        Toast.info("登录超时,请重新登入", 2, null, false);
+      }
+    } else {
+      // 未收藏
+      const res = await API.post("/user/favorites/" + id);
+      if (res.data.status === 200) {
+        Toast.info("已收藏", 1, null, false);
+        this.setState({
+          isFavorite: true,
+        });
+      } else {
+        Toast.info("登录超时,请重新登入", 2, null, false);
+      }
+    }
+  };
   // 渲染轮播图结构
   renderSwipers() {
     const {
@@ -191,6 +257,7 @@ export default class HouseDetail extends Component {
         supporting,
         description,
       },
+      isFavorite,
     } = this.state;
     return (
       <div className={styles.root}>
@@ -320,13 +387,17 @@ export default class HouseDetail extends Component {
 
         {/* 底部收藏按钮 */}
         <Flex className={styles.fixedBottom}>
-          <Flex.Item>
+          <Flex.Item onClick={this.handleFavorite}>
             <img
-              src={BASE_URL + "/img/unstar.png"}
+              src={
+                BASE_URL + (isFavorite ? "/img/star.png" : "/img/unstar.png")
+              }
               className={styles.favoriteImg}
               alt="收藏"
             />
-            <span className={styles.favorite}>收藏</span>
+            <span className={styles.favorite}>
+              {isFavorite ? "已收藏" : "收藏"}
+            </span>
           </Flex.Item>
           <Flex.Item>在线咨询</Flex.Item>
           <Flex.Item>
