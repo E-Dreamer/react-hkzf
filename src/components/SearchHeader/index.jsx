@@ -21,7 +21,7 @@ function SearchHeader({ cityname, history,className }) {
                 {/* 搜索表单 */}
                 <div
                     className="form"
-                    onClick={() => history.push('/search')}
+                    onClick={() => history.push('/rent/search')}
                 >
                     <i className="iconfont icon-seach" />
                     <span className="text">请输入小区或地址</span>

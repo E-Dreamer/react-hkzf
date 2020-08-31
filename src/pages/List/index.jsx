@@ -70,7 +70,7 @@ export default class New extends React.Component {
     });
   }
 
-  componentWillUnMount = () => {
+  componentWillUnmount = () => {
     this.setState = (state, callback) => {
       return;
     };

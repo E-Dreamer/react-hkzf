@@ -1,37 +1,41 @@
-import React from 'react'
-import { Route } from 'react-router-dom'
-import './index.scss'
+import React, { lazy, Suspense } from "react";
+import { Route } from "react-router-dom";
+import "./index.scss";
+import { TabBar } from "antd-mobile";
 // 导入tabbar
-import Index from '../Index'
-import List from '../List'
-import Profile from '../Profile'
-import Search from '../Search'
-import New from '../New'
-import { TabBar } from 'antd-mobile';
+import Index from "../Index";
+// import List from '../List'
+// import Profile from '../Profile'
+// import Search from '../Search'
+// import New from '../New'
 
+const List = lazy(() => import("../List"));
+const Profile = lazy(() => import("../Profile"));
+const New = lazy(() => import("../New"));
 
 //tabbar数据
 const tabItems = [
-    {
-        title: '首页',
-        icon: 'icon-ind',
-        path: '/home'
-    },
-    {
-        title: '找房',
-        icon: 'icon-findHouse',
-        path: '/home/list'
-    },
-    {
-        title: '资讯',
-        icon: 'icon-infom',
-        path: '/home/news'
-    }, {
-        title: '我的',
-        icon: 'icon-my',
-        path: '/home/profile'
-    }
-]
+  {
+    title: "首页",
+    icon: "icon-ind",
+    path: "/home",
+  },
+  {
+    title: "找房",
+    icon: "icon-findHouse",
+    path: "/home/list",
+  },
+  {
+    title: "资讯",
+    icon: "icon-infom",
+    path: "/home/news",
+  },
+  {
+    title: "我的",
+    icon: "icon-my",
+    path: "/home/profile",
+  },
+];
 /* 
   轮播图存在的两个问题：
   1 不会自动播放
@@ -45,57 +49,58 @@ const tabItems = [
     3 只有在轮播图数据加载完成的情况下，才渲染 轮播图组件
 */
 export default class Home extends React.Component {
-    state = {
-        hidden: false,
-        selectedTab: this.props.location.pathname
+  state = {
+    hidden: false,
+    selectedTab: this.props.location.pathname,
+  };
+  // 在这个生命周期中 判断路由地址是否切换 （对应tabbar的切换）
+  componentDidUpdate(pervProps) {
+    // console.log(pervProps);上一次的路由信息
+    if (pervProps.location.pathname !== this.props.location.pathname) {
+      //    此时说明路由发生切换了
+      this.setState({
+        selectedTab: this.props.location.pathname,
+      });
     }
-    // 在这个生命周期中 判断路由地址是否切换 （对应tabbar的切换）
-    componentDidUpdate(pervProps) {
-        // console.log(pervProps);上一次的路由信息
-        if (pervProps.location.pathname !== this.props.location.pathname) {
-            //    此时说明路由发生切换了
-            this.setState({
-                selectedTab: this.props.location.pathname
-            })
-        }
-    }
-    renderTabBarItem() {
-        return tabItems.map(item => <TabBar.Item
-            title={item.title}
-            key={item.path}
-            icon={<i className={`iconfont ${item.icon}`}></i>
-            }
-            selectedIcon={<i className={`iconfont ${item.icon}`}></i>
-            }
-            selected={this.state.selectedTab === item.path}
-            onPress={() => {
-                this.setState({
-                    selectedTab: item.path
-                })
-                this.props.history.push(item.path)
-            }}
+  }
+  renderTabBarItem() {
+    return tabItems.map((item) => (
+      <TabBar.Item
+        title={item.title}
+        key={item.path}
+        icon={<i className={`iconfont ${item.icon}`}></i>}
+        selectedIcon={<i className={`iconfont ${item.icon}`}></i>}
+        selected={this.state.selectedTab === item.path}
+        onPress={() => {
+          this.setState({
+            selectedTab: item.path,
+          });
+          this.props.history.push(item.path);
+        }}
+      ></TabBar.Item>
+    ));
+  }
+  render() {
+    return (
+      <div className="home">
+        {/* 渲染子路由  子路由的path 必须以父路由的path开头*/}
+        {/* exact 精确匹配  */}
+        <Suspense fallback={null}>
+          <Route exact path="/home" component={Index}></Route>
+          <Route path="/home/news" component={New}></Route>
+          <Route path="/home/list" component={List}></Route>
+          <Route path="/home/profile" component={Profile}></Route>
+        </Suspense>
+        {/* TabBar */}
+        <TabBar
+          tintColor="#21b97a"
+          barTintColor="white"
+          hidden={this.state.hidden}
+          noRenderContent={true}
         >
-        </TabBar.Item>)
-    }
-    render() {
-        return <div className='home'>
-            {/* 渲染子路由  子路由的path 必须以父路由的path开头*/}
-            {/* exact 精确匹配  */}
-            <Route exact path='/home' component={Index}></Route>
-            <Route path='/home/news' component={New}></Route>
-            <Route path='/home/list' component={List}></Route>
-            <Route path='/home/profile' component={Profile}></Route>
-            <Route path='/home/search' component={Search}></Route>
-
-            {/* TabBar */}
-            <TabBar
-                tintColor="#21b97a"
-                barTintColor="white"
-                hidden={this.state.hidden}
-                noRenderContent={true}
-            >
-                {this.renderTabBarItem()}
-            </TabBar>
-        </div>
-    }
+          {this.renderTabBarItem()}
+        </TabBar>
+      </div>
+    );
+  }
 }
